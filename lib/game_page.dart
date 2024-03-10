@@ -26,6 +26,7 @@ class _game_pageState extends State<game_page> {
   int player1_point = 0;
   int player2_point = 0;
 
+
   //method for put value
   void set_value(int index)
   {
@@ -37,14 +38,20 @@ class _game_pageState extends State<game_page> {
 
         turn == "x" ? turn="0" : turn = "x";
 
-        if(counter>=4)
+        //check for win
+        if(counter>=4 && counter<=8)
         {
            winnner();
+        }
+        //check for draw
+        else if(counter == 9)
+        {
+           show_snakbar("Match Draw");
         }
     }
     else
     {
-       print("value is already there");
+       show_snakbar("Value is already there",Colors.red);
     }
 
      setState(() {});
@@ -69,19 +76,16 @@ class _game_pageState extends State<game_page> {
   //get winner
   void winnner() {
     if (check_places(0, 1, 2) || check_places(3, 4, 5) || check_places(6, 7, 8)) {
-        print(win);
         //call increase point method
         point_increase();
     }
     else if (check_places(0, 3, 6) || check_places(1, 4, 7) || check_places(2, 5, 8))
     {
-       print(win);
        //call increase point method
-       point_increase();
+        point_increase();
     }
     else if( check_places(0,4,8) || check_places(2,4,6) )
     {
-      print(win);
       //call increase point method
       point_increase();
     }
@@ -92,20 +96,7 @@ class _game_pageState extends State<game_page> {
   //increase point
   void point_increase() {
     win == "x" ? player1_point++ : player2_point++;
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center( child: Text( "${win == "x" ? widget.player1 : widget.player2 } Win",
-            style: GoogleFonts.alegreya(
-              textStyle : TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-        ),
-         ) ,
-          backgroundColor: Colors.black,
-          padding: EdgeInsets.all(12.0),
-        ),
-    );
+    show_snakbar("${win == "x" ? widget.player1 : widget.player2} Win");
   }
 
   //reset method
@@ -123,8 +114,35 @@ class _game_pageState extends State<game_page> {
      setState(() {});
   }
 
+
+  //show snak bar
+  void show_snakbar(String msg , [Color? color])
+  {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Center( child: Text(msg,
+        style: GoogleFonts.alegreya(
+          textStyle : TextStyle(
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      ) ,
+        backgroundColor: color == null ? Colors.black : color,
+        padding: EdgeInsets.all(12.0),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+
+    double height = MediaQuery.sizeOf(context).height;
+    double width = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
 
       body: Container(
@@ -231,8 +249,8 @@ class _game_pageState extends State<game_page> {
 
             //grid view
             Container(
-              height: 400.0,
-              width: 400.0,
+              height: height*0.50,
+              width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: GridView.builder(
@@ -304,6 +322,7 @@ class _game_pageState extends State<game_page> {
                 ),
               ),
             ),
+
           ],
 
         ),
@@ -312,3 +331,4 @@ class _game_pageState extends State<game_page> {
     );
   }
 }
+
